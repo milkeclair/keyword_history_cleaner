@@ -39,7 +39,9 @@ jobs:
           fi
           git add .
           git status
-          git commit -m "actions: build"
+          if ! git diff-index --quiet HEAD; then
+            git commit -m "actions: build"
+          fi
 
       - name: push
         uses: nick-fields/retry@v3
