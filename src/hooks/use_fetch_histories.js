@@ -25,9 +25,9 @@ const useFetchHistories = () => {
 
     // 検索結果に応じてdeleteStateを更新
     if (results.length === 0) {
-      setDeleteState(4);
-    } else if (keyword === "") {
       setDeleteState(3);
+    } else if (keyword === "") {
+      setDeleteState(2);
     } else {
       setDeleteState(0);
     }

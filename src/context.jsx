@@ -35,7 +35,7 @@ export const DeleteContext = createContext();
 
 export const DeleteProvider = ({ children }) => {
   const [deletedCount, setDeletedCount] = useState(0);
-  // deleteState: 0: waiting, 1: incomplete, 2: completed, 3: keyword is empty, 4: not found
+  // deleteState: 0: waiting, 1: completed, 2: keyword is empty, 3: not found
   const [deleteState, setDeleteState] = useState(3);
   const [descriptionText, setDescriptionText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);

@@ -62,12 +62,10 @@ const useDeleteHistories = (abortControllerRef) => {
       case 0:
         return "削除ボタンを押すと検索履歴が削除されます";
       case 1:
-        return `${deletedCount}件の履歴を削除中...`;
-      case 2:
         return `${deletedCount}件の履歴を削除しました`;
-      case 3:
+      case 2:
         return "未入力の場合、全ての履歴が削除されます";
-      case 4:
+      case 3:
         return "検索履歴が見つかりませんでした";
     }
   }, []);
@@ -99,11 +97,9 @@ const useDeleteHistories = (abortControllerRef) => {
         setHistoriesCount(results.length);
 
         if (results.length === 0) {
-          setDeleteState(2);
           break;
         }
       } catch {
-        setDeleteState(2);
         break;
       }
     }
