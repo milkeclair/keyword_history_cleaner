@@ -15,4 +15,9 @@ const manifest = defineManifest({
 
 export default defineConfig({
   plugins: [react(), crx({ manifest })],
+  server: {
+    hmr: {
+      port: 3000,
+    },
+  },
 });
