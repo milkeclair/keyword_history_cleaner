@@ -66,7 +66,7 @@ const useDeleteHistories = (abortControllerRef) => {
       case 2:
         return `${deletedCount}件の履歴を削除しました`;
       case 3:
-        return "キーワードが入力されていない場合、<br />全ての履歴が削除されます";
+        return "未入力の場合、全ての履歴が削除されます";
       case 4:
         return "検索履歴が見つかりませんでした";
     }

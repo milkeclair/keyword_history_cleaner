@@ -9,14 +9,13 @@ import { SearchContext, DeleteContext } from "../context";
 const SearchBox = () => {
   const { inputValue, setInputValue, setKeyword } = useContext(SearchContext);
 
-  const { setDeletedCount } = useContext(DeleteContext);
+  const { setDeletedCount, isDeleting } = useContext(DeleteContext);
   const fetchHistories = useFetchHistories();
 
   // 連続して入力された時に、頻繁にfetchHistoriesが呼ばれるのを防ぐ
   useEffect(() => {
     const timeout = setTimeout(() => {
       setKeyword(inputValue);
-      console.log("setKeyword");
     }, 300);
 
     // useEffectでのreturnはcleanup
@@ -35,9 +34,11 @@ const SearchBox = () => {
   return (
     <>
       <input 
-        type="text" 
+        type="text"
+        placeholder="キーワードを入力"
         value={inputValue} 
         onChange={(event) => setInputValue(event.target.value)}
+        disabled={isDeleting}
       />
     </>
   )

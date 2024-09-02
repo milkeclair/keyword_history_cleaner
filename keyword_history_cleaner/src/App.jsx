@@ -25,14 +25,19 @@ function Popup() {
 
   return (
     <>
-      <SearchBox />
-      <DeleteButton />
-      {/* エスケープせずにHTMLを表示 */}
-      <div dangerouslySetInnerHTML={{ __html: descriptionText }} />
-      {/* a hrefでchrome://history/に飛ぶとエラーが出るので、新規タブで開く */}
-      <button onClick={() => chrome.tabs.create({ url: "chrome://history/" })}>
-        検索履歴
-      </button>
+      <div className="header">
+        {/* エスケープせずにHTMLを表示 */}
+        <div dangerouslySetInnerHTML={{ __html: descriptionText }} className="description" />
+        {/* a hrefでchrome://history/に飛ぶとエラーが出るので、新規タブで開く */}
+        <button onClick={() => chrome.tabs.create({ url: "chrome://history/" })}>
+          検索履歴
+        </button>
+      </div>
+
+      <div className="form">
+        <SearchBox />
+        <DeleteButton />
+      </div>
     </>
   )
 }
