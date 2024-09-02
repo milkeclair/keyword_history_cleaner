@@ -50,4 +50,19 @@ jobs:
           command: git push origin HEAD:main --force
 
       - name: add dist to .gitignore
-        run: echo "dist" >> .gitignore
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "dist" >> .gitignore
+          git add .gitignore
+          git commit -m "actions: add dist to .gitignore"
+
+      - name: push ignore
+        uses: nick-fields/retry@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          max_attempts: 3
+          retry_wait_seconds: 10
+          timeout_minutes: 3
+          command: git push origin HEAD:main --force
