@@ -13,7 +13,7 @@ const useSearchHistories = () => {
    * @returns {Promise} 検索結果
    */
   const searchHistories = useCallback(() => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const yearToMilliseconds = 1000 * 60 * 60 * 24 * 365;
       const tenYearsAgo = new Date().getTime() - yearToMilliseconds * 10;
       chrome.history.search(

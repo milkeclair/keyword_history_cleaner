@@ -48,7 +48,7 @@ const useDeleteHistories = (abortControllerRef) => {
         resolve(count);
       });
     },
-    [histories, isDeleting]
+    [isDeleting]
   );
 
   /**
@@ -102,7 +102,7 @@ const useDeleteHistories = (abortControllerRef) => {
           setDeleteState(2);
           break;
         }
-      } catch (error) {
+      } catch {
         setDeleteState(2);
         break;
       }
@@ -111,17 +111,18 @@ const useDeleteHistories = (abortControllerRef) => {
     setHistories([]);
     setIsDeleting(false);
   }, [
-    histories,
-    historiesCount,
-    keyword,
-    setHistories,
-    setHistoriesCount,
-    deletedCount,
-    setDeletedCount,
     setDeleteState,
+    setDeletedCount,
+    abortControllerRef,
+    historiesCount,
     isDeleting,
+    setHistories,
     setIsDeleting,
-    setDescriptionText,
+    deleteHistories,
+    histories,
+    searchHistories,
+    keyword,
+    setHistoriesCount,
   ]);
 
   useEffect(() => {

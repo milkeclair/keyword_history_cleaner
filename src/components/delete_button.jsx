@@ -30,7 +30,7 @@ const DeleteButton = () => {
     if (isDeleting) {
       handleDelete();
     }
-  }, [isDeleting]);
+  }, [handleDelete, isDeleting]);
 
   // 削除が完了したら、履歴を再取得し、表示を更新する
   useEffect(() => {
