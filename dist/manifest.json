@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Keyword History Cleaner",
+  "description": "chromeの検索履歴をキーワード検索で削除する",
+  "version": "1.0.0",
+  "permissions": [
+    "history"
+  ],
+  "action": {
+    "default_popup": "index.html"
+  }
+}
