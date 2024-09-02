@@ -1,0 +1,2 @@
+# keyword_history_cleaner
+chromeの履歴をキーワードで削除
