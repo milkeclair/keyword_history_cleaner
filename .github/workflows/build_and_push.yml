@@ -34,7 +34,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git stash --include-untracked
           git checkout main
-          git stash pop
+          if git stash list | grep -q "stash@{0}"; then
+            git stash pop
+          fi
           git add .
           git status
           git commit -m "actions: build"
