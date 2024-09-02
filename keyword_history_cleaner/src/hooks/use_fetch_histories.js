@@ -22,7 +22,6 @@ const useFetchHistories = () => {
     const results = await searchHistories();
     setHistories(results);
     setHistoriesCount(results.length);
-    console.log(`setHistoriesCount: ${results.length}`);
 
     // 検索結果に応じてdeleteStateを更新
     if (results.length === 0) {
