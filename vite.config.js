@@ -9,7 +9,7 @@ const manifest = defineManifest({
   version: "1.0.0",
   permissions: ["history"],
   action: {
-    default_popup: "popup.html",
+    default_popup: "index.html",
   },
 });
 
