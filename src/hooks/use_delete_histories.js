@@ -1,6 +1,6 @@
-import { useCallback, useContext, useEffect } from "react";
-import useSearchHistories from "./use_search_histories";
+import { useCallback, useContext, useEffect, useRef } from "react";
 import { SearchContext, DeleteContext } from "../context";
+import useSearchHistories from "./use_search_histories";
 
 /**
  * 履歴を削除する
@@ -8,48 +8,17 @@ import { SearchContext, DeleteContext } from "../context";
  * @returns {function} handleDelete
  */
 const useDeleteHistories = (abortControllerRef) => {
+  const { historiesCount, setHistories, setHistoriesCount } =
+    useContext(SearchContext);
   const {
-    keyword,
-    histories,
-    historiesCount,
-    setHistories,
-    setHistoriesCount,
-  } = useContext(SearchContext);
-
-  const {
-    deletedCount,
-    setDeletedCount,
     deleteState,
     setDeleteState,
     isDeleting,
     setIsDeleting,
     setDescriptionText,
   } = useContext(DeleteContext);
-
   const searchHistories = useSearchHistories();
-
-  /**
-   * 履歴を削除する
-   * @param {array} histories
-   * @returns {Promise} 削除した履歴の数
-   */
-  const deleteHistories = useCallback(
-    (histories) => {
-      return new Promise((resolve, reject) => {
-        let count = 0;
-        for (const history of histories) {
-          if (!isDeleting) {
-            reject(new Error("削除が中断されました"));
-            return;
-          }
-          chrome.history.deleteUrl({ url: history.url });
-          count++;
-        }
-        resolve(count);
-      });
-    },
-    [isDeleting]
-  );
+  const deletedCountRef = useRef(0);
 
   /**
    * deleteStateに応じて、検索バーの下に表示するテキストを返す
@@ -71,59 +40,97 @@ const useDeleteHistories = (abortControllerRef) => {
   }, []);
 
   /**
+   * deleteStateに応じて、検索バーの下に表示するテキストを更新する
+   */
+  const updateDescriptionText = useCallback(() => {
+    setDescriptionText(
+      handleDescriptionText(deleteState, deletedCountRef.current)
+    );
+  }, [deleteState, setDescriptionText, handleDescriptionText]);
+
+  /**
+   * 履歴を削除する
+   * @param {array} historiesToDelete
+   * @returns {Promise<void>}
+   */
+  const deleteHistories = useCallback(
+    async (historiesToDelete) => {
+      const deleteProcesses = historiesToDelete.map((history) => {
+        if (!isDeleting) {
+          throw new Error("削除が中断されました");
+        }
+        return new Promise((resolve) => {
+          chrome.history.deleteUrl({ url: history.url }, () => {
+            deletedCountRef.current += 1;
+            resolve();
+          });
+        });
+      });
+
+      // forよりPromise.allの方が早い
+      await Promise.all(deleteProcesses);
+    },
+    [isDeleting]
+  );
+
+  /**
    * 削除ボタンが押された時の処理
    * 履歴が0件になるまで削除を繰り返す
-   * 削除の状態に応じてdeleteStateを更新
    * @returns {Promise<void>}
    */
   const handleDelete = useCallback(async () => {
     setDeleteState(1);
-    setDeletedCount(0);
-
     abortControllerRef.current = new AbortController();
-    const { signal } = abortControllerRef.current;
 
     while (historiesCount > 0 && isDeleting) {
       try {
-        if (signal.aborted) {
-          throw new Error("削除が中断されました");
+        // 早期リターン
+        if (abortControllerRef.current.signal.aborted) {
+          throw new Error();
         }
-
-        const resultCount = await deleteHistories(histories);
-        setDeletedCount((prevCount) => prevCount + resultCount);
-
-        const results = await searchHistories(keyword);
-        setHistories(results);
-        setHistoriesCount(results.length);
-
-        if (results.length === 0) {
+        const searchResults = await searchHistories();
+        setHistoriesCount(searchResults.length);
+        if (historiesCount === 0) {
           break;
         }
+
+        await deleteHistories(searchResults);
       } catch {
         break;
       }
     }
-
+    // 初期化
+    if (abortControllerRef.current && abortControllerRef.current.signal) {
+      abortControllerRef.current.abort();
+    }
     setHistories([]);
     setIsDeleting(false);
+    deletedCountRef.current = 0;
   }, [
     setDeleteState,
-    setDeletedCount,
     abortControllerRef,
     historiesCount,
     isDeleting,
     setHistories,
     setIsDeleting,
-    deleteHistories,
-    histories,
     searchHistories,
-    keyword,
     setHistoriesCount,
+    deleteHistories,
   ]);
 
+  // 削除がトリガーされたら、100msごとに削除数の表示を更新する
+  // 初回はちらつくので、setTimeoutで遅延
   useEffect(() => {
-    setDescriptionText(handleDescriptionText(deleteState, deletedCount));
-  }, [deleteState, deletedCount, setDescriptionText, handleDescriptionText]);
+    const timeout = setTimeout(() => {
+      updateDescriptionText();
+    }, 100);
+    const intervalId = setInterval(updateDescriptionText, 100);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(intervalId);
+    };
+  }, [updateDescriptionText]);
 
   return handleDelete;
 };

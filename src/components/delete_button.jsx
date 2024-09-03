@@ -8,14 +8,10 @@ import { DeleteContext } from "../context";
  * @returns {JSX.Element} button
  */
 const DeleteButton = () => {
-  const {
-    isDeleting,
-    setIsDeleting,
-  } = useContext(DeleteContext);
-
-  const fetchHistories = useFetchHistories();
+  const { isDeleting, setIsDeleting } = useContext(DeleteContext);
   const abortControllerRef = useRef(null);
   const handleDelete = useDeleteHistories(abortControllerRef);
+  const fetchHistories = useFetchHistories();
 
   /**
    * 削除ボタンが押された時の処理
@@ -25,19 +21,24 @@ const DeleteButton = () => {
     setIsDeleting(!isDeleting);
   }, [isDeleting, setIsDeleting]);
 
-  // isDeletingがtrueに変更されたらhandleDeleteを呼び出す
+  // 削除中フラグがtrueになったら、削除処理を実行する
+  // falseになったら、初期化してビューを更新
   useEffect(() => {
-    if (isDeleting) {
-      handleDelete();
+    async function deleteProcess() {
+      if (isDeleting) {
+        await handleDelete();
+      } else if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
     }
-  }, [isDeleting]);
+    deleteProcess();
 
-  // 削除が完了したら、履歴を再取得し、表示を更新する
-  useEffect(() => {
-    if (!isDeleting && abortControllerRef.current) {
+    if (!isDeleting) {
       fetchHistories();
     }
-  }, [isDeleting, fetchHistories]);
+  // depsにhandleDeleteを追加すると無限ループする
+  }, [isDeleting]);
 
   return (
     <>

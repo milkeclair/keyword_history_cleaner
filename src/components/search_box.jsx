@@ -8,8 +8,7 @@ import { SearchContext, DeleteContext } from "../context";
  */
 const SearchBox = () => {
   const { inputValue, setInputValue, setKeyword } = useContext(SearchContext);
-
-  const { setDeletedCount, isDeleting } = useContext(DeleteContext);
+  const { isDeleting } = useContext(DeleteContext);
   const fetchHistories = useFetchHistories();
 
   // 連続して入力された時に、頻繁にfetchHistoriesが呼ばれるのを防ぐ
@@ -19,7 +18,6 @@ const SearchBox = () => {
     }, 300);
 
     // useEffectでのreturnはcleanup
-    // cleanupは次のeffectが実行される前に実行される
     return () => {
       clearTimeout(timeout);
     };
@@ -27,9 +25,8 @@ const SearchBox = () => {
 
   // 検索するキーワードが変更されたら、履歴を検索する
   useEffect(() => {
-    setDeletedCount(0);
     fetchHistories();
-  }, [fetchHistories, setDeletedCount]);
+  }, [fetchHistories]);
 
   return (
     <>

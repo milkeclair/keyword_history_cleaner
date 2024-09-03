@@ -9,9 +9,7 @@ import { SearchContext, DeleteContext } from "../context";
 const useFetchHistories = () => {
   const { keyword, setHistories, setHistoriesCount } =
     useContext(SearchContext);
-
   const { setDeleteState } = useContext(DeleteContext);
-
   const searchHistories = useSearchHistories();
 
   /**

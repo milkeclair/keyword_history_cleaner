@@ -34,7 +34,6 @@ export const SearchProvider = ({ children }) => {
 export const DeleteContext = createContext();
 
 export const DeleteProvider = ({ children }) => {
-  const [deletedCount, setDeletedCount] = useState(0);
   // deleteState: 0: waiting, 1: completed, 2: keyword is empty, 3: not found
   const [deleteState, setDeleteState] = useState(3);
   const [descriptionText, setDescriptionText] = useState("");
@@ -43,8 +42,6 @@ export const DeleteProvider = ({ children }) => {
   return (
     <DeleteContext.Provider
       value={{
-        deletedCount,
-        setDeletedCount,
         deleteState,
         setDeleteState,
         descriptionText,
