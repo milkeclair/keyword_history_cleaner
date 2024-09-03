@@ -7,8 +7,7 @@ import { SearchContext, DeleteContext } from "../context";
  * @returns {function} fetchHistories
  */
 const useFetchHistories = () => {
-  const { keyword, setHistories, setHistoriesCount } =
-    useContext(SearchContext);
+  const { keyword } = useContext(SearchContext);
   const { setDeleteState } = useContext(DeleteContext);
   const searchHistories = useSearchHistories();
 
@@ -18,8 +17,6 @@ const useFetchHistories = () => {
    */
   const fetchHistories = useCallback(async () => {
     const results = await searchHistories();
-    setHistories(results);
-    setHistoriesCount(results.length);
 
     // 検索結果に応じてdeleteStateを更新
     if (results.length === 0) {
@@ -29,13 +26,7 @@ const useFetchHistories = () => {
     } else {
       setDeleteState(0);
     }
-  }, [
-    searchHistories,
-    setHistories,
-    setHistoriesCount,
-    setDeleteState,
-    keyword,
-  ]);
+  }, [searchHistories, setDeleteState, keyword]);
 
   return fetchHistories;
 };

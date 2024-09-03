@@ -7,8 +7,6 @@ export const SearchContext = createContext();
 
 export const SearchProvider = ({ children }) => {
   const [keyword, setKeyword] = useState("");
-  const [histories, setHistories] = useState([]);
-  const [historiesCount, setHistoriesCount] = useState(0);
   const [inputValue, setInputValue] = useState("");
 
   return (
@@ -16,10 +14,6 @@ export const SearchProvider = ({ children }) => {
       value={{
         keyword,
         setKeyword,
-        histories,
-        setHistories,
-        historiesCount,
-        setHistoriesCount,
         inputValue,
         setInputValue,
       }}>

@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useRef } from "react";
-import { SearchContext, DeleteContext } from "../context";
+import { DeleteContext } from "../context";
 import useSearchHistories from "./use_search_histories";
 
 /**
@@ -8,8 +8,6 @@ import useSearchHistories from "./use_search_histories";
  * @returns {function} handleDelete
  */
 const useDeleteHistories = (abortControllerRef) => {
-  const { historiesCount, setHistories, setHistoriesCount } =
-    useContext(SearchContext);
   const {
     deleteState,
     setDeleteState,
@@ -50,12 +48,12 @@ const useDeleteHistories = (abortControllerRef) => {
 
   /**
    * 履歴を削除する
-   * @param {array} historiesToDelete
+   * @param {array} histories
    * @returns {Promise<void>}
    */
   const deleteHistories = useCallback(
-    async (historiesToDelete) => {
-      const deleteProcesses = historiesToDelete.map((history) => {
+    async (histories) => {
+      const deleteProcesses = histories.map((history) => {
         if (!isDeleting) {
           throw new Error("削除が中断されました");
         }
@@ -82,15 +80,14 @@ const useDeleteHistories = (abortControllerRef) => {
     setDeleteState(1);
     abortControllerRef.current = new AbortController();
 
-    while (historiesCount > 0 && isDeleting) {
+    while (isDeleting) {
       try {
         // 早期リターン
         if (abortControllerRef.current.signal.aborted) {
           throw new Error();
         }
         const searchResults = await searchHistories();
-        setHistoriesCount(searchResults.length);
-        if (historiesCount === 0) {
+        if (searchResults.length === 0) {
           break;
         }
 
@@ -103,18 +100,14 @@ const useDeleteHistories = (abortControllerRef) => {
     if (abortControllerRef.current && abortControllerRef.current.signal) {
       abortControllerRef.current.abort();
     }
-    setHistories([]);
     setIsDeleting(false);
     deletedCountRef.current = 0;
   }, [
     setDeleteState,
     abortControllerRef,
-    historiesCount,
     isDeleting,
-    setHistories,
     setIsDeleting,
     searchHistories,
-    setHistoriesCount,
     deleteHistories,
   ]);
 
