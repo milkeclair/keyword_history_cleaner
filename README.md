@@ -1,1 +1,1 @@
-# keyword_history_cleaner
+### キーワードを入力して履歴を削除する
