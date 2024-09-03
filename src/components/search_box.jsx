@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import useFetchHistories from "../hooks/use_fetch_histories";
 import { SearchContext, DeleteContext } from "../context";
 
@@ -10,6 +10,12 @@ const SearchBox = () => {
   const { inputValue, setInputValue, setKeyword } = useContext(SearchContext);
   const { isDeleting } = useContext(DeleteContext);
   const fetchHistories = useFetchHistories();
+  const inputRef = useRef(null);
+
+  // ページを開いた時にフォーカスする
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
 
   // 連続して入力された時に、頻繁にfetchHistoriesが呼ばれるのを防ぐ
   useEffect(() => {
@@ -36,6 +42,7 @@ const SearchBox = () => {
         value={inputValue} 
         onChange={(event) => setInputValue(event.target.value)}
         disabled={isDeleting}
+        ref={inputRef}
       />
     </>
   )
